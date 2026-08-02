@@ -1,0 +1,1 @@
+.\utorrent.exe /directory "D:\FTP-server\Images\Games\Tiberian sun Firestrom" "D:\FTP-server\Images\Games\Tiberian sun Firestrom\Tiberian sun Firestrom.iso.torrent"
