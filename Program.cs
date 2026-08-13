@@ -25,11 +25,12 @@ namespace TorBatchMaker
         string tracker1 = "";
         string tracker2 = "";
         bool isOnlyNewTor = false;
-        string torNameApp = Directory.GetCurrentDirectory() + "\\transmission\\transmission_create.exe";
-
+        string torMakerAppPath = Directory.GetCurrentDirectory() + "\\transmission\\transmission-create.exe";
+        string torClientAppPath = "";
         // Объявляем событие
-        public delegate void TorMakerHandler(TorMaker sender, string text);
-        public event TorMakerHandler? SendCommand;
+        EventProps eventProps;
+        public delegate void TorMakerHandler(TorMaker sender, EventProps eventProps);
+        public event TorMakerHandler? NewEvent;
 
         public void makeTorrents()
         {
@@ -37,42 +38,70 @@ namespace TorBatchMaker
             {
                 rootDir = new DirectoryInfo(singleDir).Parent.ToString();
                 singleDir = new DirectoryInfo(singleDir).Name.ToString();
-                Debug.WriteLine("rootDir: " + rootDir);
-                Debug.WriteLine("singleDir: " + singleDir);
-
-                torAppRun(singleDir);
+                torMakerAppRun(singleDir);
             }
             else
             {
                 getDirList();
                 foreach (string dir in dirList) 
                 { 
-                    torAppRun(dir);
+                    torMakerAppRun(dir);
+                }
+            }
+        }
+        public void seedTorrents()
+        {
+            torClientAppPath = torClientAppPath + "\\uTorrent.exe";
+            if (isSingleDir)
+            {
+                rootDir = new DirectoryInfo(singleDir).Parent.ToString();
+                singleDir = new DirectoryInfo(singleDir).Name.ToString();
+                torClientAppRun(singleDir);
+            }
+            else
+            {
+                getDirList();
+                foreach (string dir in dirList)
+                {
+                    torClientAppRun(dir);
                 }
             }
         }
         void getDirList()
         {
-            Debug.WriteLine("Dir list: ");
             dirList = Directory.GetDirectories(rootDir).Select(Path.GetFileName).ToArray(); ;
-            foreach (string dir in dirList)
+        }
+        void torClientAppRun(string dir)
+        {      
+            string path = rootDir + "\\" + dir;
+            string arguments = "/directory \"" + path + "\" \"" + path + "\\" + dir + ".torrent\"";
+            ProcessStartInfo startInfo = new ProcessStartInfo(torClientAppPath)
             {
-                Debug.WriteLine(dir);
+                Arguments = arguments,
+                UseShellExecute = false,
+            };
+            using (Process process = Process.Start(startInfo))
+            {
+                Thread.Sleep(1000);
+                process.Close();
             }
         }
-        void torAppRun(string dir)
+        void torMakerAppRun(string dir)
         {
-            //string arguments = "create \"" + rootDir + "\\" + dir + "\" -o \"" + rootDir + "\\" + dir + "\" -a \"" + tracker1 + "\" \"" + tracker2 + "\"";
-            //string command = "torrenttools create \"" + rootDir + "\\" + dirList[0] + "\" -o \"" + rootDir + "\\" + dirList[0] + "\" -a \"" + tracker1 + "\" \"" + tracker2 +  "\"";
-            string arguments = "-o \"" + rootDir + "\\" + dir + "\\" + dir + ".torrent\" -t \"" + tracker1 + "\" -t \"" + tracker2 + "\" \"" + rootDir + "\\" + dir + "\""; 
-            Debug.WriteLine("dir: " + dir);
-            Debug.WriteLine("arguments: " + arguments);
-            Debug.WriteLine("checkExistTorFile: " + checkExistTorFile(dir).ToString());
-            
-            // Вызываем событие, когда нужно обновить данные
-            SendCommand?.Invoke(this, arguments);
+            string path = rootDir + "\\" + dir;
+            //string command = "torrenttools create \"" + path + "\" -o \"" + path + "\" -a \"" + tracker1 + "\" \"" + tracker2 +  "\"";
+            string arguments = "-o \"" + path + "\\" + dir + ".torrent\" -t \"" + tracker1 + "\" -t \"" + tracker2 + "\" \"" + path + "\""; 
+            if (isOnlyNewTor)
+            {
+                if (checkExistTorFile(path))
+                {
+                    sendEvent(false, true, dir, false, "Exist");
+                    return;
+                }                   
+            }
+            sendEvent(true, false, arguments, false, "");
 
-            ProcessStartInfo startInfo = new ProcessStartInfo(torNameApp)
+            ProcessStartInfo startInfo = new ProcessStartInfo(torMakerAppPath)
             {
                 Arguments = arguments,
                 UseShellExecute = false,
@@ -81,27 +110,55 @@ namespace TorBatchMaker
             using (Process process = Process.Start(startInfo))
             {
                 process.WaitForExit();
+                Debug.WriteLine("ExitCode: " + process.ExitCode.ToString());
+                if (process.ExitCode == 0)
+                {
+                    sendEvent(false, true, dir, false, "Created");                
+                }
+                else
+                {
+                    sendEvent(false, true, dir, true, "Error");
+                }   
             }
         }
         bool checkExistTorFile(string path)
         {
-            var directory = new DirectoryInfo(rootDir + "\\" + path);
+            var directory = new DirectoryInfo(path);
             FileInfo[] files = directory.GetFiles("*.torrent");
-            if (files.Length == 0)
-            {
-                return false;
-            }
+            if (files.Length == 0) return false;
             return true;
         }
+
+        void sendEvent(bool isArgs, bool isTorName, string torName, bool isError, string message)
+        {
+            eventProps = new EventProps();
+            eventProps.isArgs = isArgs;
+            eventProps.isTorName = isTorName;
+            eventProps.torName = torName;
+            eventProps.isError = isError;
+            eventProps.message = message;
+            NewEvent?.Invoke(this, eventProps);
+        }
+
         public TorMaker() { }
         public TorMaker(TorProps torProps)
         {
-            this.rootDir = torProps.rootDir;
-            this.singleDir = torProps.singleDir;
-            this.isSingleDir = torProps.isSingleDir;
-            this.tracker1 = torProps.tracker1;
-            this.tracker2 = torProps.tracker2;
-            this.isOnlyNewTor = torProps.isOnlyNewTor;       
+            rootDir = torProps.rootDir;
+            singleDir = torProps.singleDir;
+            isSingleDir = torProps.isSingleDir;
+            tracker1 = torProps.tracker1;
+            tracker2 = torProps.tracker2;
+            isOnlyNewTor = torProps.isOnlyNewTor;
+            torClientAppPath = torProps.torClientPath;
         }
+
+    }
+    public class EventProps()
+    {
+        public bool isArgs = false;
+        public bool isTorName = false;
+        public string torName = "";
+        public bool isError = false;
+        public string message = "";
     }
 }
