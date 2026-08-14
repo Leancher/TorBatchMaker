@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            ListViewItem listViewItem1 = new ListViewItem("1");
-            ListViewItem listViewItem2 = new ListViewItem("2");
-            btCreate = new Button();
+            ListViewItem listViewItem3 = new ListViewItem("1");
+            ListViewItem listViewItem4 = new ListViewItem("2");
+            btMakeTorrents = new Button();
             btAddSeed = new Button();
             label1 = new Label();
             txtRootDir = new TextBox();
@@ -47,21 +47,23 @@
             listTors = new ListView();
             columnHeader1 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
+            listDirs = new ListBox();
+            btCheckTorExist = new Button();
             SuspendLayout();
             // 
-            // btCreate
+            // btMakeTorrents
             // 
-            btCreate.Location = new Point(26, 188);
-            btCreate.Name = "btCreate";
-            btCreate.Size = new Size(320, 23);
-            btCreate.TabIndex = 0;
-            btCreate.Text = "Создать торренты";
-            btCreate.UseVisualStyleBackColor = true;
-            btCreate.Click += btCreate_Click;
+            btMakeTorrents.Location = new Point(25, 288);
+            btMakeTorrents.Name = "btMakeTorrents";
+            btMakeTorrents.Size = new Size(320, 23);
+            btMakeTorrents.TabIndex = 0;
+            btMakeTorrents.Text = "Создать торренты";
+            btMakeTorrents.UseVisualStyleBackColor = true;
+            btMakeTorrents.Click += btMakeTorrents_Click;
             // 
             // btAddSeed
             // 
-            btAddSeed.Location = new Point(26, 300);
+            btAddSeed.Location = new Point(25, 383);
             btAddSeed.Name = "btAddSeed";
             btAddSeed.Size = new Size(320, 23);
             btAddSeed.TabIndex = 1;
@@ -72,7 +74,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(29, 23);
+            label1.Location = new Point(26, 23);
             label1.Name = "label1";
             label1.Size = new Size(176, 15);
             label1.TabIndex = 2;
@@ -82,13 +84,13 @@
             // 
             txtRootDir.Location = new Point(26, 41);
             txtRootDir.Name = "txtRootDir";
-            txtRootDir.Size = new Size(320, 23);
+            txtRootDir.Size = new Size(319, 23);
             txtRootDir.TabIndex = 3;
-            txtRootDir.Text = "D:\\FTP-server\\Images\\Games";
+            txtRootDir.Text = "D:\\FTP-server\\Images";
             // 
             // txtTracker1
             // 
-            txtTracker1.Location = new Point(26, 403);
+            txtTracker1.Location = new Point(25, 427);
             txtTracker1.Name = "txtTracker1";
             txtTracker1.Size = new Size(320, 23);
             txtTracker1.TabIndex = 5;
@@ -96,7 +98,7 @@
             // 
             // txtTracker2
             // 
-            txtTracker2.Location = new Point(26, 432);
+            txtTracker2.Location = new Point(25, 456);
             txtTracker2.Name = "txtTracker2";
             txtTracker2.Size = new Size(320, 23);
             txtTracker2.TabIndex = 6;
@@ -105,7 +107,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(26, 385);
+            label2.Location = new Point(25, 409);
             label2.Name = "label2";
             label2.Size = new Size(55, 15);
             label2.TabIndex = 7;
@@ -113,7 +115,7 @@
             // 
             // txtSingleDir
             // 
-            txtSingleDir.Location = new Point(26, 142);
+            txtSingleDir.Location = new Point(25, 249);
             txtSingleDir.Name = "txtSingleDir";
             txtSingleDir.Size = new Size(320, 23);
             txtSingleDir.TabIndex = 8;
@@ -122,7 +124,7 @@
             // cbSingleDir
             // 
             cbSingleDir.AutoSize = true;
-            cbSingleDir.Location = new Point(26, 117);
+            cbSingleDir.Location = new Point(25, 224);
             cbSingleDir.Name = "cbSingleDir";
             cbSingleDir.Size = new Size(312, 19);
             cbSingleDir.TabIndex = 10;
@@ -132,7 +134,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(29, 465);
+            label3.Location = new Point(26, 491);
             label3.Name = "label3";
             label3.Size = new Size(55, 15);
             label3.TabIndex = 11;
@@ -140,7 +142,7 @@
             // 
             // txtCommand
             // 
-            txtCommand.Location = new Point(28, 483);
+            txtCommand.Location = new Point(25, 509);
             txtCommand.Name = "txtCommand";
             txtCommand.Size = new Size(663, 23);
             txtCommand.TabIndex = 12;
@@ -148,7 +150,7 @@
             // cbOnlyNewTor
             // 
             cbOnlyNewTor.AutoSize = true;
-            cbOnlyNewTor.Location = new Point(26, 83);
+            cbOnlyNewTor.Location = new Point(25, 199);
             cbOnlyNewTor.Name = "cbOnlyNewTor";
             cbOnlyNewTor.Size = new Size(204, 19);
             cbOnlyNewTor.TabIndex = 13;
@@ -158,7 +160,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(26, 241);
+            label4.Location = new Point(25, 324);
             label4.Name = "label4";
             label4.Size = new Size(196, 15);
             label4.TabIndex = 14;
@@ -166,7 +168,7 @@
             // 
             // txtTorClientPath
             // 
-            txtTorClientPath.Location = new Point(26, 259);
+            txtTorClientPath.Location = new Point(25, 342);
             txtTorClientPath.Name = "txtTorClientPath";
             txtTorClientPath.Size = new Size(320, 23);
             txtTorClientPath.TabIndex = 15;
@@ -178,10 +180,10 @@
             listTors.FullRowSelect = true;
             listTors.GridLines = true;
             listTors.HeaderStyle = ColumnHeaderStyle.None;
-            listTors.Items.AddRange(new ListViewItem[] { listViewItem1, listViewItem2 });
+            listTors.Items.AddRange(new ListViewItem[] { listViewItem3, listViewItem4 });
             listTors.Location = new Point(372, 23);
             listTors.Name = "listTors";
-            listTors.Size = new Size(319, 432);
+            listTors.Size = new Size(319, 456);
             listTors.TabIndex = 16;
             listTors.UseCompatibleStateImageBehavior = false;
             listTors.View = View.Details;
@@ -191,11 +193,32 @@
             // 
             columnHeader1.Width = 250;
             // 
+            // listDirs
+            // 
+            listDirs.FormattingEnabled = true;
+            listDirs.Items.AddRange(new object[] { "1" });
+            listDirs.Location = new Point(25, 70);
+            listDirs.Name = "listDirs";
+            listDirs.Size = new Size(320, 94);
+            listDirs.TabIndex = 17;
+            // 
+            // btCheckTorExist
+            // 
+            btCheckTorExist.Location = new Point(25, 170);
+            btCheckTorExist.Name = "btCheckTorExist";
+            btCheckTorExist.Size = new Size(320, 23);
+            btCheckTorExist.TabIndex = 18;
+            btCheckTorExist.Text = "Проверить наличие";
+            btCheckTorExist.UseVisualStyleBackColor = true;
+            btCheckTorExist.Click += btCheckTorExist_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(727, 538);
+            ClientSize = new Size(720, 562);
+            Controls.Add(btCheckTorExist);
+            Controls.Add(listDirs);
             Controls.Add(listTors);
             Controls.Add(txtTorClientPath);
             Controls.Add(label4);
@@ -210,7 +233,8 @@
             Controls.Add(txtRootDir);
             Controls.Add(label1);
             Controls.Add(btAddSeed);
-            Controls.Add(btCreate);
+            Controls.Add(btMakeTorrents);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "Form1";
             Text = "Пакетное создание торрент-файлов";
             Load += Form1_Load;
@@ -220,7 +244,7 @@
 
         #endregion
 
-        private Button btCreate;
+        private Button btMakeTorrents;
         private Button btAddSeed;
         private Label label1;
         private TextBox txtRootDir;
@@ -237,5 +261,7 @@
         private ListView listTors;
         private ColumnHeader columnHeader1;
         private ColumnHeader columnHeader2;
+        private ListBox listDirs;
+        private Button btCheckTorExist;
     }
 }
